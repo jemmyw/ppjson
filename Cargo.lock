@@ -79,14 +79,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pest-test"
-version = "0.1.0"
-dependencies = [
- "pest",
- "pest_derive",
-]
-
-[[package]]
 name = "pest_derive"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -118,6 +110,14 @@ dependencies = [
  "maplit",
  "pest",
  "sha-1",
+]
+
+[[package]]
+name = "ppjson"
+version = "0.1.0"
+dependencies = [
+ "pest",
+ "pest_derive",
 ]
 
 [[package]]
