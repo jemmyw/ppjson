@@ -13,7 +13,7 @@ fn unwrap_string_pair(pair: Pair<Rule>) -> &str {
     }
 }
 
-fn parse_json(input: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
+fn parse_json_file(input: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
     let json = JSONParser::parse(Rule::value, input)?.next().unwrap();
 
     fn parse_value(pair: Pair<Rule>) -> JSONValue {
@@ -51,6 +51,6 @@ pub struct JsonParser;
 
 impl super::parser::Parser for JsonParser {
     fn parse<'a>(&'a self, input: &'a str) -> Result<JSONValue, std::string::String> {
-        parse_json(input).map_err(|err| err.to_string())
+        parse_json_file(input).map_err(|err| err.to_string())
     }
 }

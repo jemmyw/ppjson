@@ -14,6 +14,10 @@ fn parse(input: &str) -> std::string::String {
 #[test]
 fn correct_hashes() {
     assert_eq!(parse(r#"{"hello" => "world"}"#), r#"{"hello":"world"}"#);
+    assert_eq!(
+        parse(r#"{"hello" => "world"} and then some"#),
+        r#"{"hello":"world"}"#
+    );
     assert_eq!(parse(r#"{:hello => "world"}"#), r#"{"hello":"world"}"#);
     assert_eq!(parse(r#"{hello: "world"}"#), r#"{"hello":"world"}"#);
     assert_eq!(
