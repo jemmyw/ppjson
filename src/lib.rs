@@ -6,7 +6,7 @@ pub mod parsers;
 use parsers::parser;
 
 pub fn serialize(json_value: &parser::JSONValue) -> std::string::String {
-    parsers::parser::serialize_jsonvalue(json_value)
+    parser::serialize_jsonvalue(json_value)
 }
 
 // fn main() {

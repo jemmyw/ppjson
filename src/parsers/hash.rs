@@ -13,8 +13,8 @@ fn unwrap_string_pair(pair: Pair<Rule>) -> &str {
     }
 }
 
-fn parse_hash_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
-    let hash = HASHParser::parse(Rule::value, file)?.next().unwrap();
+fn parse_hash(input: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
+    let hash = HASHParser::parse(Rule::value, input)?.next().unwrap();
 
     fn parse_value(pair: Pair<Rule>) -> JSONValue {
         match pair.as_rule() {
@@ -63,6 +63,6 @@ pub struct HashParser {}
 
 impl super::parser::Parser for HashParser {
     fn parse<'a>(&'a self, input: &'a str) -> Result<JSONValue, std::string::String> {
-        parse_hash_file(input).map_err(|err| err.to_string())
+        parse_hash(input).map_err(|err| err.to_string())
     }
 }
