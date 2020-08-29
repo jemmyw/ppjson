@@ -10,6 +10,10 @@ WHITESPACE = _{
   line_terminator
 }
 
+line_continuation = _{ "\\" ~ line_terminator_sequence }
+line_terminator = _{ "\u{000A}" | "\u{000D}" | "\u{2028}" | "\u{2029}" }
+line_terminator_sequence = _{ "\u{000D}" ~ "\u{000A}" | line_terminator }
+
 array = {  "[" ~ value ~ ("," ~ value)* ~ ","? ~ "]"? | "[" ~ "]"? }
 
 boolean = @{ "true" | "false" }
@@ -47,51 +51,30 @@ hex_escape_sequence = @{ ASCII_HEX_DIGIT{2} }
 
 hex_integer_literal = _{ ^"0x" ~ ASCII_HEX_DIGIT+ }
 
-identifier = ${ identifier_start ~ identifier_part* }
-
-identifier_part = _{
-  identifier_start |
-  &(
-    NONSPACING_MARK |
-    DIACRITIC | // not sure about this, spec says "Combining spacing mark (Mc)"
-    DECIMAL_NUMBER |
-    CONNECTOR_PUNCTUATION |
-    "\u{200C}" |
-    "\u{200D}"
-  ) ~ char_literal
-}
-
-identifier_start = _{
-  &(unicode_letter | "$" | "_") ~ char_literal |
-  "\\u" ~ unicode_escape_sequence
-}
-
-key = { identifier | string }
-
-line_continuation = _{ "\\" ~ line_terminator_sequence }
-
-line_terminator = _{ "\u{000A}" | "\u{000D}" | "\u{2028}" | "\u{2029}" }
-
-line_terminator_sequence = _{ "\u{000D}" ~ "\u{000A}" | line_terminator }
+symbol_start = { UPPERCASE_LETTER | LOWERCASE_LETTER }
+symbol_chars = { UPPERCASE_LETTER | LOWERCASE_LETTER | "_" | LETTER_NUMBER }
+symbol_inner = @{ symbol_start ~ symbol_chars* }
+symbol = ${ ":" ~ symbol_inner }
 
 non_escape_char = _{ !(escape_char | line_terminator) ~ ANY }
 
 nul_escape_sequence = @{ "0" }
 
-null = @{ "null" }
+nil = @{ "nil" }
 
 number = @{ ("+" | "-")? ~ numeric_literal }
 
 numeric_literal = _{
   hex_integer_literal |
-  decimal_literal |
-  "Infinity" |
-  "NaN"
+  decimal_literal
 }
 
 object = { "{" ~ "}" | "{" ~ pair ~ ("," ~ pair)* ~ ","? ~ "}"? }
 
-pair = { key ~ ":" ~ value }
+rocket_key = { symbol | string }
+rocket_pair = { rocket_key ~ "=>" ~ value }
+symbol_pair = { symbol_inner ~ ":" ~ value }
+pair = _{ rocket_pair | symbol_pair }
 
 single_escape_char = _{ "'" | "\"" | "\\" | "b" | "f" | "n" | "r" | "t" | "v" }
 
@@ -101,8 +84,13 @@ single_quote_char = _{
   !"'" ~ char_literal
 }
 
-inner = @{ double_quote_char* }
-string = ${ "\"" ~ inner ~ "\""? }
+dq_inner = @{ double_quote_char* }
+dq_string = ${ "\"" ~ dq_inner ~ "\""? }
+
+sq_inner = @{ single_quote_char* }
+sq_string = ${ "'" ~ sq_inner ~ "'"? }
+
+string = _{ sq_string | dq_string }
 
 unicode_escape_sequence = @{ ASCII_HEX_DIGIT{4} }
 
@@ -115,4 +103,4 @@ unicode_letter = _{
   LETTER_NUMBER
 }
 
-value = _{ null | boolean | string | number | object | array | EOI }
+value = _{ nil | boolean | string | number | object | array | EOI }

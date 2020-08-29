@@ -39,7 +39,7 @@ fn parse_hash_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
             Rule::string => JSONValue::String(unwrap_string_pair(pair)),
             Rule::number => JSONValue::Number(pair.as_str().parse().unwrap()),
             Rule::boolean => JSONValue::Boolean(pair.as_str().parse().unwrap()),
-            Rule::null => JSONValue::Null,
+            Rule::nil => JSONValue::Null,
             _ => JSONValue::Null,
         }
     }

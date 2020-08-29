@@ -47,7 +47,7 @@ fn parse_json_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
     Ok(parse_value(json))
 }
 
-pub struct JsonParser {}
+pub struct JsonParser;
 
 impl super::parser::Parser for JsonParser {
     fn parse<'a>(&'a self, input: &'a str) -> Result<JSONValue, std::string::String> {
