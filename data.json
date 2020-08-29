@@ -1,0 +1,9 @@
+{
+  "hello": "world",
+  "bool": true,
+  "num": 123,
+  "null": null,
+  "nested": {
+    "hello": "world"
+  },
+  "array": [1,2,3]
