@@ -22,11 +22,22 @@ fn parse_hash_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
                 pair.into_inner()
                     .map(|pair| {
                         let mut inner_rules = pair.into_inner();
-
                         match (inner_rules.next(), inner_rules.next()) {
                             (Some(key_pair), Some(value_pair)) => {
-                                let name =
-                                    unwrap_string_pair(key_pair.into_inner().next().unwrap());
+                                let name = match key_pair.as_rule() {
+                                    Rule::rocket_key => {
+                                        let key_inner = key_pair.into_inner().next().unwrap();
+
+                                        match key_inner.as_rule() {
+                                            Rule::string => unwrap_string_pair(key_inner),
+                                            Rule::symbol => key_inner.into_inner().as_str(),
+                                            _ => unreachable!(),
+                                        }
+                                    }
+                                    Rule::symbol_inner => key_pair.as_str(),
+                                    _ => unreachable!(),
+                                };
+
                                 let value = parse_value(value_pair);
                                 (name, value)
                             }
@@ -37,6 +48,7 @@ fn parse_hash_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
             ),
             Rule::array => JSONValue::Array(pair.into_inner().map(parse_value).collect()),
             Rule::string => JSONValue::String(unwrap_string_pair(pair)),
+            Rule::symbol => JSONValue::String(pair.as_str()),
             Rule::number => JSONValue::Number(pair.as_str().parse().unwrap()),
             Rule::boolean => JSONValue::Boolean(pair.as_str().parse().unwrap()),
             Rule::nil => JSONValue::Null,

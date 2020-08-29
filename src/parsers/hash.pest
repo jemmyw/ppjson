@@ -52,7 +52,7 @@ hex_escape_sequence = @{ ASCII_HEX_DIGIT{2} }
 hex_integer_literal = _{ ^"0x" ~ ASCII_HEX_DIGIT+ }
 
 symbol_start = { UPPERCASE_LETTER | LOWERCASE_LETTER }
-symbol_chars = { UPPERCASE_LETTER | LOWERCASE_LETTER | "_" | LETTER_NUMBER }
+symbol_chars = { UPPERCASE_LETTER | LOWERCASE_LETTER | "_" | NUMBER }
 symbol_inner = @{ symbol_start ~ symbol_chars* }
 symbol = ${ ":" ~ symbol_inner }
 
@@ -85,12 +85,12 @@ single_quote_char = _{
 }
 
 dq_inner = @{ double_quote_char* }
-dq_string = ${ "\"" ~ dq_inner ~ "\""? }
+dq_string = _{ "\"" ~ dq_inner ~ "\""? }
 
 sq_inner = @{ single_quote_char* }
-sq_string = ${ "'" ~ sq_inner ~ "'"? }
+sq_string = _{ "'" ~ sq_inner ~ "'"? }
 
-string = _{ sq_string | dq_string }
+string = ${ sq_string | dq_string }
 
 unicode_escape_sequence = @{ ASCII_HEX_DIGIT{4} }
 
@@ -103,4 +103,4 @@ unicode_letter = _{
   LETTER_NUMBER
 }
 
-value = _{ nil | boolean | string | number | object | array | EOI }
+value = _{ nil | boolean | string | symbol | number | object | array | EOI }
