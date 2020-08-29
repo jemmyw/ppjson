@@ -3,8 +3,8 @@ use pest::iterators::Pair;
 use pest::Parser;
 
 #[derive(Parser)]
-#[grammar = "parsers/json.pest"]
-struct JSONParser;
+#[grammar = "parsers/hash.pest"]
+struct HASHParser;
 
 fn unwrap_string_pair(pair: Pair<Rule>) -> &str {
     match pair.into_inner().next() {
@@ -13,8 +13,8 @@ fn unwrap_string_pair(pair: Pair<Rule>) -> &str {
     }
 }
 
-fn parse_json_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
-    let json = JSONParser::parse(Rule::value, file)?.next().unwrap();
+fn parse_hash_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
+    let hash = HASHParser::parse(Rule::value, file)?.next().unwrap();
 
     fn parse_value(pair: Pair<Rule>) -> JSONValue {
         match pair.as_rule() {
@@ -44,13 +44,13 @@ fn parse_json_file(file: &str) -> Result<JSONValue, pest::error::Error<Rule>> {
         }
     }
 
-    Ok(parse_value(json))
+    Ok(parse_value(hash))
 }
 
-pub struct JsonParser {}
+pub struct HashParser {}
 
-impl super::parser::Parser for JsonParser {
+impl super::parser::Parser for HashParser {
     fn parse<'a>(&'a self, input: &'a str) -> Result<JSONValue, std::string::String> {
-        parse_json_file(input).map_err(|err| err.to_string())
+        parse_hash_file(input).map_err(|err| err.to_string())
     }
 }

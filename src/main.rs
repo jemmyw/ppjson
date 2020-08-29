@@ -3,13 +3,14 @@ extern crate pest;
 extern crate pest_derive;
 
 mod parsers;
-use parsers::json::parse_json_file;
-use parsers::serializer::serialize_jsonvalue;
+use parsers::parser::{serialize_jsonvalue, Parser};
 use std::fs;
 
 fn main() {
-    let unparsed_file = fs::read_to_string("data.json").expect("cannot read file");
-    let value = parse_json_file(&unparsed_file);
+    let unparsed_file = fs::read_to_string("fixtures/data.json").expect("cannot read file");
+
+    let parser = parsers::json::JsonParser {};
+    let value = parser.parse(&unparsed_file);
 
     match value {
         Ok(json) => println!("{}", serialize_jsonvalue(&json)),

@@ -28,3 +28,7 @@ pub fn serialize_jsonvalue(val: &JSONValue) -> String {
         Null => format!("null"),
     }
 }
+
+pub trait Parser {
+    fn parse<'a>(&'a self, input: &'a str) -> Result<JSONValue, std::string::String>;
+}
