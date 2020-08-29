@@ -66,7 +66,7 @@ identifier_start = _{
   "\\u" ~ unicode_escape_sequence
 }
 
-key = _{ identifier | string }
+key = { identifier | string }
 
 line_continuation = _{ "\\" ~ line_terminator_sequence }
 
@@ -80,7 +80,7 @@ nul_escape_sequence = @{ "0" }
 
 null = @{ "null" }
 
-number = @{ ("+" | "-")? ~ numeric_literal|EOI }
+number = @{ ("+" | "-")? ~ numeric_literal }
 
 numeric_literal = _{
   hex_integer_literal |
@@ -91,7 +91,7 @@ numeric_literal = _{
 
 object = { "{" ~ "}" | "{" ~ pair ~ ("," ~ pair)* ~ ","? ~ "}"? }
 
-pair = _{ key ~ ":" ~ value }
+pair = { key ~ ":" ~ value }
 
 single_escape_char = _{ "'" | "\"" | "\\" | "b" | "f" | "n" | "r" | "t" | "v" }
 
@@ -101,9 +101,8 @@ single_quote_char = _{
   !"'" ~ char_literal
 }
 
-string = ${ "\"" ~ double_quote_char* ~ "\""? | "'" ~ single_quote_char* ~ "'"? }
-
-text = _{ SOI ~ value ~ EOI }
+inner = @{ double_quote_char* }
+string = ${ "\"" ~ inner ~ "\""? }
 
 unicode_escape_sequence = @{ ASCII_HEX_DIGIT{4} }
 

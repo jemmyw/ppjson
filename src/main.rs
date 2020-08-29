@@ -3,6 +3,7 @@ extern crate pest;
 extern crate pest_derive;
 
 use pest::error::Error;
+use pest::iterators::Pair;
 use pest::Parser;
 use std::fs;
 
@@ -19,10 +20,15 @@ enum JSONValue<'a> {
     Null,
 }
 
+fn unwrap_string_pair(pair: Pair<Rule>) -> Option<&str> {
+    match pair.into_inner().next() {
+        Some(inner) => Some(inner.as_str()),
+        None => None,
+    }
+}
+
 fn parse_json_file(file: &str) -> Result<JSONValue, Error<Rule>> {
     let json = JSONParser::parse(Rule::value, file)?.next().unwrap();
-
-    use pest::iterators::Pair;
 
     fn parse_value(pair: Pair<Rule>) -> JSONValue {
         match pair.as_rule() {
@@ -30,29 +36,31 @@ fn parse_json_file(file: &str) -> Result<JSONValue, Error<Rule>> {
                 pair.into_inner()
                     .map(|pair| {
                         let mut inner_rules = pair.into_inner();
-                        println!("{}", inner_rules.next());
 
-
-
-
-                        let name = inner_rules
-                            .next()
-                            .unwrap()
-                            .into_inner()
-                            .next()
-                            .unwrap()
-                            .as_str();
-                        let value = parse_value(inner_rules.next().unwrap());
-                        (name, value)
+                        match inner_rules.next() {
+                            Some(item) => {
+                                match unwrap_string_pair(item.into_inner().next().unwrap()) {
+                                    Some(name) => {
+                                        let value = parse_value(inner_rules.next().unwrap());
+                                        (name, value)
+                                    }
+                                    None => unreachable!(),
+                                }
+                            }
+                            None => ("none", JSONValue::Null),
+                        }
                     })
                     .collect(),
             ),
             Rule::array => JSONValue::Array(pair.into_inner().map(parse_value).collect()),
-            Rule::string => JSONValue::String(pair.into_inner().next().unwrap().as_str()),
+            Rule::string => match unwrap_string_pair(pair) {
+                Some(str) => JSONValue::String(str),
+                None => unreachable!(),
+            },
             Rule::number => JSONValue::Number(pair.as_str().parse().unwrap()),
             Rule::boolean => JSONValue::Boolean(pair.as_str().parse().unwrap()),
             Rule::null => JSONValue::Null,
-            _ => unreachable!(),
+            _ => JSONValue::Null,
         }
     }
 
