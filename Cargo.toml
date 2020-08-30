@@ -1,5 +1,6 @@
 [package]
 name = "ppjson"
+description = "Partially parse JSON. Like if it gets cut off half way through, still output something useful."
 version = "0.1.0"
 authors = ["Jeremy Wells <jemmyw@gmail.com>"]
 edition = "2018"
